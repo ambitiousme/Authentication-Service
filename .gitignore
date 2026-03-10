@@ -1,0 +1,14 @@
+# Build 
+target/
+
+#IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath
+
+# OS
+.DS_Store
+Thumbs.db
