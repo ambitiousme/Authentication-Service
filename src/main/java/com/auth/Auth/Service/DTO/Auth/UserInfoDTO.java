@@ -1,11 +1,10 @@
 package com.auth.Auth.Service.DTO.Auth;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class ForgetPasswordResponse {
-
+@Getter
+public class UserInfoDTO {
     private String username;
-    private String email;
     private String name;
+    private String email;
 }

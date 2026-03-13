@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 
 @Data
 @NoArgsConstructor
@@ -34,21 +35,23 @@ public class User {
     @Column(nullable = false,unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
     @Column(name = "contact")
     private String contactNo;
 
-    @Column
-    private int age;
+    @Transient
+    public int getAge() {
+        if (dateOfBirth == null) return 0;
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+    }
 
     @Column(name = "DOB")
     private LocalDate dateOfBirth;
 
     @Embedded
     private Address address;
-
-    private String resetToken;
-
-    private LocalDateTime tokenExpiry;
 
     @CreationTimestamp
     @Column(name = "created_at")

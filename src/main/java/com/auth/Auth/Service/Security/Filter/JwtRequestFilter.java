@@ -1,5 +1,6 @@
 package com.auth.Auth.Service.Security.Filter;
 
+import com.auth.Auth.Service.Security.CustomPrincipal;
 import com.auth.Auth.Service.Security.Service.CustomUserDetailsService;
 import com.auth.Auth.Service.Security.Utility.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -7,6 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -47,21 +51,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
             final String username = jwtUtil.extractUsername(jwt);
+            final String userId = jwtUtil.extractUserId(jwt);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            List<String> roles = jwtUtil.extractRoles(jwt);
 
-                UserDetails userDetails = customerUserDetailsService.loadUserByUsername(username);
+            CustomPrincipal customPrincipal = new CustomPrincipal(userId,username);
 
-                if (jwtUtil.validateToken(jwt, userDetails)) {
+            List<GrantedAuthority> authorities = roles.stream().map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
 
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                            null, userDetails.getAuthorities());
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.validateToken(jwt)) {
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customPrincipal, null, authorities);
 
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                }
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
             }
 
             filterChain.doFilter(request, response);
