@@ -19,7 +19,7 @@ public class RefreshToken {
     private String token;
 
     @Column(nullable = false)
-    private String username;
+    private String userId;
 
     @Column(nullable = false)
     private Instant expriryDate;

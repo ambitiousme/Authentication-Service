@@ -16,17 +16,22 @@ import com.auth.Auth.Service.Security.Service.CustomUserDetailsService;
 import com.auth.Auth.Service.Security.Utility.JwtUtil;
 import com.auth.Auth.Service.Security.Utility.RefreshTokenUtility;
 import com.auth.Auth.Service.Service.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -35,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private static final long RESET_TOKEN_EXPIRY = 15 * 60;
     private static final long EMAIL_VERIFICATION_TOKEN_EXPIRY = 30 * 24 * 60 * 60;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
 
     private final CustomUserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
@@ -89,8 +95,9 @@ public class AuthServiceImpl implements AuthService {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        final String token = jwtUtil.generateToken(userDetails.getUsername());
-        final String refreshToken = refreshTokenUtility.create(userDetails.getUsername()).getToken();
+        logger.info("printing userid :"+ userDetails.getUserId());
+        final String token = jwtUtil.generateToken(userDetails);
+        final String refreshToken = refreshTokenUtility.create(userDetails.getUserId()).getToken();
 
         return new TokenResponse(token, refreshToken);
 
@@ -187,7 +194,10 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse refreshtoken(RefreshRequest request) {
         RefreshToken refreshToken = refreshTokenUtility.validate(request.getRefreshToken());
 
-        String token = jwtUtil.generateToken(refreshToken.getUsername());
+        String userId = refreshToken.getUserId();
+        User user =  userRepository.findById(userId).orElseThrow(()-> new RuntimeException("User not found"));
+
+        String token = jwtUtil.generateToken(new CustomUserDetails(user, new ArrayList<>()));
         String newRefreshToken = refreshTokenUtility.rotate(refreshToken).getToken();
 
         return new TokenResponse(token, newRefreshToken);

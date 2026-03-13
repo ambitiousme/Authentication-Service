@@ -1,5 +1,6 @@
 package com.auth.Auth.Service.ServiceImplementation;
 
+import com.auth.Auth.Service.Controller.UserController;
 import com.auth.Auth.Service.DTO.Auth.UserInfoDTO;
 import com.auth.Auth.Service.DTO.UpdateEmailRequest;
 import com.auth.Auth.Service.DTO.UpdateUsernameRequest;
@@ -10,13 +11,18 @@ import com.auth.Auth.Service.Mapper.UserMapper;
 import com.auth.Auth.Service.Repository.UserRepository;
 import com.auth.Auth.Service.Security.CustomPrincipal;
 import com.auth.Auth.Service.Service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 @Service
 public class UserServiceImplementation implements UserService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImplementation.class);
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -80,8 +86,8 @@ public class UserServiceImplementation implements UserService {
         if (request.getContactNo() != null)
             user.setContactNo(request.getContactNo());
 
-        if (request.getDateOfBirth() != null)
-            user.setDateOfBirth(request.getDateOfBirth());
+        if (request.getDob() != null)
+            user.setDob(request.getDob());
 
         if (request.getAddress() != null)
             user.setAddress(request.getAddress());
@@ -108,16 +114,6 @@ public class UserServiceImplementation implements UserService {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
 
         return principal.getUserId();
-
-    }
-
-    private String getUsername() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
-
-        return principal.getUsername();
 
     }
 }

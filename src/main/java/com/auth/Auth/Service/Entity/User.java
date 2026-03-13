@@ -43,12 +43,12 @@ public class User {
 
     @Transient
     public int getAge() {
-        if (dateOfBirth == null) return 0;
-        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+        if (dob == null) return 0;
+        return Period.between(dob, LocalDate.now()).getYears();
     }
 
     @Column(name = "DOB")
-    private LocalDate dateOfBirth;
+    private LocalDate dob;
 
     @Embedded
     private Address address;

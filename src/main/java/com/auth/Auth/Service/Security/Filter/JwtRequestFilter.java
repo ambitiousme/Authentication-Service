@@ -3,10 +3,13 @@ package com.auth.Auth.Service.Security.Filter;
 import com.auth.Auth.Service.Security.CustomPrincipal;
 import com.auth.Auth.Service.Security.Service.CustomUserDetailsService;
 import com.auth.Auth.Service.Security.Utility.JwtUtil;
+import com.auth.Auth.Service.ServiceImplementation.UserServiceImplementation;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,12 +21,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final CustomUserDetailsService customerUserDetailsService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 
     private final JwtUtil jwtUtil;
 
@@ -41,7 +47,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
 
+        LOGGER.info("entering jwt filter");
         final String authHeader = request.getHeader("Authorization");
+
+
+
+
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -49,26 +60,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         try {
+
             final String jwt = authHeader.substring(7);
-            final String username = jwtUtil.extractUsername(jwt);
-            final String userId = jwtUtil.extractUserId(jwt);
+
+            final String userId = jwtUtil.extractUseId(jwt);
+
 
             List<String> roles = jwtUtil.extractRoles(jwt);
+            CustomPrincipal customPrincipal = CustomPrincipal.builder().userId(userId).build();
 
-            CustomPrincipal customPrincipal = new CustomPrincipal(userId,username);
+            List<GrantedAuthority> authorities;
 
-            List<GrantedAuthority> authorities = roles.stream().map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
+            if(roles != null && !roles.isEmpty())
+            authorities = roles.stream().map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
+            else
+                authorities = new ArrayList<>();
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.validateToken(jwt)) {
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtil.validateToken(jwt)) {
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customPrincipal, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-
+                LOGGER.info("entering jwt filter 3");
             }
 
+            LOGGER.info("entering jwt filter4");
             filterChain.doFilter(request, response);
 
         } catch (Exception exception) {

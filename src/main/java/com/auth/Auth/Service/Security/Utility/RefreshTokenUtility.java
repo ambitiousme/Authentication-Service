@@ -22,10 +22,10 @@ public class RefreshTokenUtility {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public RefreshToken create (String username)
+    public RefreshToken create (String userId)
     {
         RefreshToken rt = new RefreshToken();
-        rt.setUsername(username);
+        rt.setUserId(userId);
         rt.setToken(UUID.randomUUID().toString());
         rt.setExpriryDate(Instant.now().plusSeconds(REFRESH_EXPIRY_DAYS * 24 * 60 * 60));
         rt.setRevoked(false);
@@ -46,11 +46,11 @@ public class RefreshTokenUtility {
     public RefreshToken rotate(RefreshToken oldToken){
         oldToken.setRevoked(true);
         refreshTokenRepository.save(oldToken);
-        return create(oldToken.getUsername());
+        return create(oldToken.getUserId());
     }
 
-    public void revokeAllUserToken(String username){
-        refreshTokenRepository.findAll().stream().filter(rt -> rt.getUsername().equals("username"))
+    public void revokeAllUserToken(String userId){
+        refreshTokenRepository.findAll().stream().filter(rt -> rt.getUserId().equals(userId))
                 .forEach(rt -> {
                     rt.setRevoked(true);
                     refreshTokenRepository.save(rt);

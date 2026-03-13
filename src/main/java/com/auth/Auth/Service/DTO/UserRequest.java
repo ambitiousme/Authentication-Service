@@ -10,6 +10,6 @@ public class UserRequest {
 
     private String name;
     private String contactNo;
-    private LocalDate dateOfBirth;
+    private LocalDate dob;
     private Address address;
 }

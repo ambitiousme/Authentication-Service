@@ -13,11 +13,13 @@ import lombok.NoArgsConstructor;
 public class Address {
 
     @Column
-    private String addressLine;
+    private String street;
     @Column
     private String city;
     @Column
     private String state;
     @Column
     private String country;
+    @Column
+    private int zipcode;
 }

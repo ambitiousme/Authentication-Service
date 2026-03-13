@@ -22,7 +22,7 @@ server:
 security:
   jwt:
     secret-key: "This is my secret key for my Expense Tracker Application."
-    expiration-time: 3600000
+    expiration-time: 360000000
 
 logging:
   level:
