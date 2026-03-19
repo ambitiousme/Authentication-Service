@@ -1,6 +1,9 @@
 package com.auth.Auth.Service.Security.Service;
 
 import com.auth.Auth.Service.Entity.User;
+import com.auth.Auth.Service.Exception.ExceptionConstants;
+import com.auth.Auth.Service.Exception.InvalidCredentialsException;
+import com.auth.Auth.Service.Exception.UsernameOrEmailNotFoundException;
 import com.auth.Auth.Service.Repository.UserRepository;
 import com.auth.Auth.Service.Security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,9 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(identifier)
+                .or(() -> userRepository.findByUsername(identifier))
+                .orElseThrow(() -> new UsernameNotFoundException(ExceptionConstants.EmailUsernameNotFound));
 
         return new CustomUserDetails(user, new ArrayList<>());
     }

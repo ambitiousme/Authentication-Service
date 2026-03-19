@@ -13,6 +13,6 @@ public class UserResponse {
     private boolean emailVerified;
     private String contactNo;
     private int age;
-    private LocalDate dateOfBirth;
+    private LocalDate dob;
     private Address address;
 }

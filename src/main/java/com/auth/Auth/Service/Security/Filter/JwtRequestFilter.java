@@ -1,9 +1,14 @@
 package com.auth.Auth.Service.Security.Filter;
 
+import com.auth.Auth.Service.Exception.ExceptionConstants;
+import com.auth.Auth.Service.Exception.JwtAuthenticationException;
 import com.auth.Auth.Service.Security.CustomPrincipal;
 import com.auth.Auth.Service.Security.Service.CustomUserDetailsService;
 import com.auth.Auth.Service.Security.Utility.JwtUtil;
-import com.auth.Auth.Service.ServiceImplementation.UserServiceImplementation;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -50,10 +54,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         LOGGER.info("entering jwt filter");
         final String authHeader = request.getHeader("Authorization");
 
-
-
-
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -64,7 +64,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             final String jwt = authHeader.substring(7);
 
             final String userId = jwtUtil.extractUseId(jwt);
-
 
             List<String> roles = jwtUtil.extractRoles(jwt);
             CustomPrincipal customPrincipal = CustomPrincipal.builder().userId(userId).build();
@@ -83,13 +82,33 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                LOGGER.info("entering jwt filter 3");
+
             }
 
-            LOGGER.info("entering jwt filter4");
             filterChain.doFilter(request, response);
 
-        } catch (Exception exception) {
+        }
+        catch (ExpiredJwtException ex) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                    new JwtAuthenticationException(ExceptionConstants.TOKEN_EXPIRED));
+        }
+        catch (MalformedJwtException ex) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                    new JwtAuthenticationException(ExceptionConstants.INVALID_TOKEN_FORMAT));
+        }
+        catch (SignatureException ex) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                    new JwtAuthenticationException(ExceptionConstants.INVALID_TOKEN_SIGNATURE));
+        }
+        catch (UnsupportedJwtException ex) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                    new JwtAuthenticationException(ExceptionConstants.UNSUPPORTED_TOKEN));
+        }
+        catch (IllegalArgumentException ex) {
+            handlerExceptionResolver.resolveException(request, response, null,
+                    new JwtAuthenticationException(ExceptionConstants.BLANK_TOKEN));
+        }
+        catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
 
