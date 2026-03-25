@@ -2,10 +2,10 @@ package com.auth.Auth.Service.Service;
 
 
 import com.auth.Auth.Service.DTO.Auth.UserInfoDTO;
-import com.auth.Auth.Service.DTO.UpdateEmailRequest;
-import com.auth.Auth.Service.DTO.UpdateUsernameRequest;
-import com.auth.Auth.Service.DTO.UserRequest;
-import com.auth.Auth.Service.DTO.UserResponse;
+import com.auth.Auth.Service.DTO.User.UpdateEmailRequest;
+import com.auth.Auth.Service.DTO.User.UpdateUsernameRequest;
+import com.auth.Auth.Service.DTO.User.UserRequest;
+import com.auth.Auth.Service.DTO.User.UserResponse;
 
 public interface UserService {
     UserResponse getUser();

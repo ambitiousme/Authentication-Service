@@ -1,7 +1,7 @@
 package com.auth.Auth.Service.Mapper;
 
 import com.auth.Auth.Service.DTO.Auth.*;
-import com.auth.Auth.Service.DTO.UserResponse;
+import com.auth.Auth.Service.DTO.User.UserResponse;
 import com.auth.Auth.Service.Entity.User;
 import org.mapstruct.Mapper;
 

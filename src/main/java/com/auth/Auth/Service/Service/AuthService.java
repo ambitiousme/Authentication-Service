@@ -1,6 +1,7 @@
 package com.auth.Auth.Service.Service;
 
 import com.auth.Auth.Service.DTO.Auth.*;
+import com.auth.Auth.Service.DTO.Token.TokenResponse;
 
 public interface AuthService {
 

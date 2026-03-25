@@ -1,12 +1,11 @@
 package com.auth.Auth.Service.Controller;
 
 import com.auth.Auth.Service.DTO.Auth.UserInfoDTO;
-import com.auth.Auth.Service.DTO.UpdateEmailRequest;
-import com.auth.Auth.Service.DTO.UpdateUsernameRequest;
-import com.auth.Auth.Service.DTO.UserRequest;
-import com.auth.Auth.Service.DTO.UserResponse;
+import com.auth.Auth.Service.DTO.User.UpdateEmailRequest;
+import com.auth.Auth.Service.DTO.User.UpdateUsernameRequest;
+import com.auth.Auth.Service.DTO.User.UserRequest;
+import com.auth.Auth.Service.DTO.User.UserResponse;
 import com.auth.Auth.Service.Service.UserService;
-import com.auth.Auth.Service.ServiceImplementation.AuthServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

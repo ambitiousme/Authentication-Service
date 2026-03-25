@@ -1,4 +1,4 @@
-package com.auth.Auth.Service.DTO;
+package com.auth.Auth.Service.DTO.User;
 
 import com.auth.Auth.Service.Entity.Embedded.Address;
 import lombok.Data;

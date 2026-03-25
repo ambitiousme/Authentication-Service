@@ -1,6 +1,7 @@
 package com.auth.Auth.Service.Controller;
 
 import com.auth.Auth.Service.DTO.Auth.*;
+import com.auth.Auth.Service.DTO.Token.TokenResponse;
 import com.auth.Auth.Service.Service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

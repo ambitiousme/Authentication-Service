@@ -1,11 +1,10 @@
 package com.auth.Auth.Service.ServiceImplementation;
 
-import com.auth.Auth.Service.Controller.UserController;
 import com.auth.Auth.Service.DTO.Auth.UserInfoDTO;
-import com.auth.Auth.Service.DTO.UpdateEmailRequest;
-import com.auth.Auth.Service.DTO.UpdateUsernameRequest;
-import com.auth.Auth.Service.DTO.UserRequest;
-import com.auth.Auth.Service.DTO.UserResponse;
+import com.auth.Auth.Service.DTO.User.UpdateEmailRequest;
+import com.auth.Auth.Service.DTO.User.UpdateUsernameRequest;
+import com.auth.Auth.Service.DTO.User.UserRequest;
+import com.auth.Auth.Service.DTO.User.UserResponse;
 import com.auth.Auth.Service.Entity.User;
 import com.auth.Auth.Service.Exception.ExceptionConstants;
 import com.auth.Auth.Service.Exception.UserNotFoundException;
@@ -19,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.security.Principal;
 
 @Service
 public class UserServiceImplementation implements UserService {
